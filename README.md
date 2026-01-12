@@ -2,35 +2,37 @@
 
 A collection of useful hooks for Claude Code and OpenCode.
 
+## Hooks
+
+| Hook | Description | Trigger | Behavior |
+|------|-------------|---------|----------|
+| [check-duplicate-functions.sh](hooks/check-duplicate-functions.sh) | Warns when creating a function that already exists in the codebase | `PostToolUse` on Write/Edit | Warning |
+| [no-dynamic-imports.sh](hooks/no-dynamic-imports.sh) | Blocks dynamic imports in favor of static imports | `PreToolUse` on Write/Edit | Blocks |
+
 ## Installation
 
 ### Claude Code
 
-Copy hooks to `~/.claude/hooks/` and configure in `~/.claude/settings.json`.
+```bash
+# Copy hooks
+cp hooks/*.sh ~/.claude/hooks/
+
+# Make executable
+chmod +x ~/.claude/hooks/*.sh
+```
+
+Then configure in `~/.claude/settings.json`.
 
 ### OpenCode
 
-Copy hooks to `~/.config/opencode/hooks/` and configure in your opencode settings.
+```bash
+# Copy hooks
+mkdir -p ~/.config/opencode/hooks
+cp hooks/*.sh ~/.config/opencode/hooks/
 
-## Hooks
-
-### check-duplicate-functions.sh
-
-Warns when you're creating a function that already exists elsewhere in the codebase. Helps prevent code duplication.
-
-**Trigger**: `PostToolUse` on `Write` and `Edit` tools
-
-**Behavior**: Warning only (doesn't block)
-
-**Supported languages**: JavaScript, TypeScript, Python, Zig, Go, Rust, C/C++
-
-### no-dynamic-imports.sh
-
-Blocks dynamic imports in favor of static imports. Detects patterns like `await` followed by `import()`.
-
-**Trigger**: `PreToolUse` on `Write` and `Edit` tools
-
-**Behavior**: Blocks with exit code 2
+# Make executable
+chmod +x ~/.config/opencode/hooks/*.sh
+```
 
 ## Configuration Example
 
@@ -39,17 +41,6 @@ Add to your `settings.json`:
 ```json
 {
   "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/check-duplicate-functions.sh"
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Write|Edit",
@@ -57,6 +48,17 @@ Add to your `settings.json`:
           {
             "type": "command",
             "command": "~/.claude/hooks/no-dynamic-imports.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/check-duplicate-functions.sh"
           }
         ]
       }
